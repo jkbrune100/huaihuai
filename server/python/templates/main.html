@@ -1,0 +1,32 @@
+<html>
+    <head>
+        <title>{{ title }}</title>
+    </head>
+    <body>
+        <canvas id="canvas" style="width:600;height:600;background:green">
+        </canvas>
+    </body>
+    <script>
+        let canvas = document.getElementById("canvas");
+        function getMousePos(canvas, evt) {
+            var rect = canvas.getBoundingClientRect();
+            return {
+            x: evt.clientX - rect.left,
+            y: evt.clientY - rect.top
+            };
+        }
+        canvas.addEventListener('mousemove', function(evt) {
+            var mousePos = getMousePos(canvas, evt);
+            console.log('Mouse position: ' + mousePos.x + ',' + mousePos.y);
+            const x = mousePos.x;
+            const y = mousePos.y;
+            
+            const xhr = new XMLHttpRequest()
+            //open a get request with the remote server URL
+//            xhr.open("PUT", "/joints/j1=0.00&j2=1.0&j3=3.0&j4=3.14", true);
+            xhr.open("PUT", `/joints?j1=${x}&j2=${y}&j3=4.0&j4=10`, true);
+            xhr.send();
+//send the Http request
+        }, false);
+    </script>
+</html>
