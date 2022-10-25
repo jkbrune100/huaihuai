@@ -7,6 +7,8 @@
         </canvas>
     </body>
     <script>
+        let out_standing = 0;
+        
         let canvas = document.getElementById("canvas");
         function getMousePos(canvas, evt) {
             var rect = canvas.getBoundingClientRect();
@@ -20,12 +22,20 @@
             console.log('Mouse position: ' + mousePos.x + ',' + mousePos.y);
             const x = mousePos.x;
             const y = mousePos.y;
+            if ( out_standing < 3 ) {
             
-            const xhr = new XMLHttpRequest()
-            //open a get request with the remote server URL
-//            xhr.open("PUT", "/joints/j1=0.00&j2=1.0&j3=3.0&j4=3.14", true);
-            xhr.open("PUT", `/joints?j1=${x}&j2=${y}&j3=4.0&j4=10`, true);
-            xhr.send();
+		    const xhr = new XMLHttpRequest()
+		    xhr.onload = (e) => {
+		         console.log( e.responseText );
+		         out_standing--;    
+		    }
+		    //open a get request with the remote server URL
+	//            xhr.open("PUT", "/joints/j1=0.00&j2=1.0&j3=3.0&j4=3.14", true);
+		    xhr.open("PUT", `/joints?j1=${x}&j2=${y}&j3=4.0&j4=10`, true);
+		    xhr.send();
+		    out_standing++;
+	    }		    
+            
 //send the Http request
         }, false);
     </script>

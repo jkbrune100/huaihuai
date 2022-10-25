@@ -3,6 +3,7 @@ import math
 
 app = Flask(__name__)
 
+
 @app.route('/')
 def hello_world():
     title = "Raspberry Pi Ball Balancer"
@@ -31,3 +32,12 @@ def joints( ):
 def test( param ):
     print("/test received param", param)
     return "ok"
+    
+def create_app():
+    print("create_app")
+    app.run( )
+
+if __name__ == "__main__":
+    app.run( host="0.0.0.0", port=8080 )
+
+
