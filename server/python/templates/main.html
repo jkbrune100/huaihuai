@@ -56,56 +56,99 @@
             let x = mousePos.x;
             let y = mousePos.y;
             if ( (mouse_down) && ( out_standing < 3 ) ) {
-            
-		    const xhr = new XMLHttpRequest()
-		    xhr.onload = (e) => {
-		         console.log( e.responseText );
-		         out_standing--;    
-		    }
-		    //open a get request with the remote server URL
-	//            xhr.open("PUT", "/joints/j1=0.00&j2=1.0&j3=3.0&j4=3.14", true);
-		    console.log( `width ${canvas.style.width} height ${canvas.style.height}`); 
-		    // x = 2 * x / canvas.style.width - 0.5;
-		    // y = 2 * y / canvas.style.height - 0.5;
-		    xhr.open("PUT", `/joints?j1=${x}&j2=${y}&j3=4.0&j4=10`, true);
-		    xhr.send();
-		    out_standing++;
-	    }		    
-            
+				const xhr = new XMLHttpRequest()
+				xhr.onload = (e) => {
+					console.log( e.responseText );
+					out_standing--;
+				}    
+				//open a get request with the remote server URL
+		//            xhr.open("PUT", "/joints/j1=0.00&j2=1.0&j3=3.0&j4=3.14", true);
+				console.log( `width ${canvas.style.width} height ${canvas.style.height}`); 
+				// x = 2 * x / canvas.style.width - 0.5;
+				// y = 2 * y / canvas.style.height - 0.5;
+				xhr.open("PUT", `/joints?j1=${x}&j2=${y}&j3=4.0&j4=10`, true);
+				xhr.send();
+				out_standing++;
+			}
         }, false);
         
         // Set up touch events for mobile, etc
 	canvas.addEventListener("touchstart", function (e) {
 		mousePos = getTouchPos(canvas, e);
-	  var touch = e.touches[0];
-	  var mouseEvent = new MouseEvent("mousedown", {
-	    clientX: touch.clientX,
-	    clientY: touch.clientY
-	  });
-	  canvas.dispatchEvent(mouseEvent);
+		var touch = e.touches[0];
+		var mouseEvent = new MouseEvent("mousedown", {
+			clientX: touch.clientX,
+			clientY: touch.clientY
+		});
+		canvas.dispatchEvent(mouseEvent);
 	}, false);
 	
 	canvas.addEventListener("touchend", function (e) {
-	  var mouseEvent = new MouseEvent("mouseup", {});
-	  canvas.dispatchEvent(mouseEvent);
+		var mouseEvent = new MouseEvent("mouseup", {});
+		canvas.dispatchEvent(mouseEvent);
 	}, false);
-	
+
 	canvas.addEventListener("touchmove", function (e) {
-	  var touch = e.touches[0];
-	  var mouseEvent = new MouseEvent("mousemove", {
-	    clientX: touch.clientX,
-	    clientY: touch.clientY
-	  });
-	  canvas.dispatchEvent(mouseEvent);
+		var touch = e.touches[0];
+		var mouseEvent = new MouseEvent("mousemove", {
+			clientX: touch.clientX,
+			clientY: touch.clientY
+		});
+		canvas.dispatchEvent(mouseEvent);
 	}, false);
-	
+
 	// Get the position of a touch relative to the canvas
 	function getTouchPos(canvasDom, touchEvent) {
-	  var rect = canvasDom.getBoundingClientRect();
-	  return {
-	    x: touchEvent.touches[0].clientX - rect.left,
-	    y: touchEvent.touches[0].clientY - rect.top
-	  };
+		var rect = canvasDom.getBoundingClientRect();
+		return {
+			x: touchEvent.touches[0].clientX - rect.left,
+			y: touchEvent.touches[0].clientY - rect.top
+		};
+	}
+
+	function handleOrientationEvent(event) {
+		let x = event.beta; // In degree in the range [-180,180)
+		let y = event.gamma; // In degree in the range [-90,90)
+
+		// Because we don't want to have the device upside down
+		// We constrain the x value to the range [-90,90]
+		if (x > 90) {
+			x = 90;
+		}
+		if (x < -90) {
+			x = -90;
+		}
+
+		// To make computation easier we shift the range of
+		// x and y to [0,180]
+		x += 90;
+		y += 90;
+	}
+
+	if ( window.DeviceOrientationEvent ) {
+		window.addEventListener("deviceorientation", (event) => {
+			const yaw = event.alpha;
+			const pitch = event.beta; 
+			const roll = event.gamma;
+
+			console.log(`roll ${roll} pitch ${pitch} yaw ${yaw}`);
+
+			if ( ( roll >= -90 ) && ( roll <= 90 ) ) {
+				if ( pitch > 90 ) {
+					pitch = 90;
+				} else if ( pitch < -90 ) {
+					pitch = -90;
+				}
+
+				var rect = canvas.getBoundingClientRect();
+
+				let mouseEvent = new MouseEvent("mousemove", {
+					clientX: ( roll / 90 + 1 ) * rect.width/2,
+					clientY: ( pitch / 90 + 1 ) * rect.height/2
+				});
+				canvas.dispatchEvent(mouseEvent);
+			}
+		}
 	}
 
     </script>
