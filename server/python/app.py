@@ -100,7 +100,8 @@ def normalize_angle( angle ):
 def convert_angle_to_pwm( angle ):
     ret = None
     angle = normalize_angle( angle )
-    print("angle", angle/math.pi*180)
+    print("angle", angle/math.pi*180)    
+    
     
     if angle >= 0 and angle <  math.pi:
         p_width = servo_max - servo_min #600 - 150
@@ -127,7 +128,8 @@ def create_app():
 #        if val is not None:        
 #            set_servo_pulse( pwm, joint, home )
             
-    app.run( host="0.0.0.0", port=8080 )
+    app.run( host="0.0.0.0", port=8080, ssl_context='adhoc' )
+    #app.run( host="0.0.0.0", port=8080)
 
 if __name__ == "__main__":
     create_app()
